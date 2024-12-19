@@ -113,40 +113,46 @@ buildRoutes(app);
 
 if(isRouteEnabled("index", "docs")) {
     console.log('Original Swagger Spec:', JSON.stringify(swaggerSpec, null, 2));
-
+    
     app.get('/swagger.json', (req, res) => {
         const modifiedSpec = {
             ...swaggerSpec,
             servers: [{
                 url: 'http://ec2-3-89-232-12.compute-1.amazonaws.com:8000',
                 description: 'EC2 server'
-            }],
-            basePath: '/',
-            openapi: '3.1.0',
-            paths: {
-                ...swaggerSpec.paths,
-                '/v1/chat/completions': {
-                    ...swaggerSpec.paths['/v1/chat/completions'],
-                    servers: [{
-                        url: 'http://ec2-3-89-232-12.compute-1.amazonaws.com:8000'
-                    }]
-                }
-            }
+            }]
         };
         console.log('Modified Swagger Spec:', JSON.stringify(modifiedSpec, null, 2));
         res.json(modifiedSpec);
     });
 
+    // Add middleware to rewrite URLs before they reach the API
+    app.use((req, res, next) => {
+        if (req.url.includes('/v1/')) {
+            console.log('Before URL rewrite:', req.url);
+            req.headers.host = 'ec2-3-89-232-12.compute-1.amazonaws.com:8000';
+            req.url = req.url.replace('localhost:8000', 'ec2-3-89-232-12.compute-1.amazonaws.com:8000');
+            console.log('After URL rewrite:', req.url);
+        }
+        next();
+    });
+
     app.use('/', swaggerUi.serve, swaggerUi.setup(null, {
         customSiteTitle: "Voyager APIs",
         swaggerOptions: {
-            url: `http://ec2-3-89-232-12.compute-1.amazonaws.com:8000/swagger.json`,
+            url: '/swagger.json',
             persistAuthorization: true,
             displayRequestDuration: true,
             tryItOutEnabled: true,
             defaultModelsExpandDepth: -1,
             filter: true,
-            defaultUrl: 'http://ec2-3-89-232-12.compute-1.amazonaws.com:8000'
+            requestInterceptor: (req) => {
+                const url = new URL(req.url);
+                if (url.hostname === 'localhost') {
+                    req.url = req.url.replace('localhost:8000', 'ec2-3-89-232-12.compute-1.amazonaws.com:8000');
+                }
+                return req;
+            }
         }
     }));
 }
