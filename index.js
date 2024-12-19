@@ -30,9 +30,12 @@ import { loadDefaultDataset } from './tools/plugin.js';
 import { loadDataset } from './database/rag-inference.js';
 import { readFileSync } from 'fs';
 
+console.log('Starting Voyager server...');
+
 configDotenv()
 configDotenv({path: ".env.production", override:true})
 decodeEnabledAPIs();
+console.log('Enabled APIs:', process.env.ENABLED_APIS);
 
 const force_load = false;
 await initDB(force_load)
@@ -112,6 +115,7 @@ buildRoutes(app);
 }*/
 
 if(isRouteEnabled("index", "docs")) {
+    console.log('Documentation route is enabled');
     console.log('Initializing Swagger documentation...');
     
     app.get('/swagger.json', (req, res) => {
@@ -152,6 +156,7 @@ if(isRouteEnabled("index", "docs")) {
 }
 
 const PORT = process.env.PORT || 8000
+console.log('About to start server on port:', PORT);
 if(
     +process.env.ENABLE_HTTPS &&
     !process.env.HTTPS_KEY_PATH.startsWith("*") &&
