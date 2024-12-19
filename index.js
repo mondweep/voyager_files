@@ -112,9 +112,10 @@ buildRoutes(app);
 }*/
 
 if(isRouteEnabled("index", "docs")) {
-    console.log('Original Swagger Spec:', JSON.stringify(swaggerSpec, null, 2));
+    console.log('Initializing Swagger documentation...');
     
     app.get('/swagger.json', (req, res) => {
+        console.log('Swagger spec requested');
         const modifiedSpec = {
             ...swaggerSpec,
             servers: [{
@@ -122,18 +123,17 @@ if(isRouteEnabled("index", "docs")) {
                 description: 'EC2 server'
             }]
         };
-        console.log('Modified Swagger Spec:', JSON.stringify(modifiedSpec, null, 2));
+        console.log('Sending modified Swagger spec:', JSON.stringify(modifiedSpec.servers, null, 2));
         res.json(modifiedSpec);
     });
 
-    // Add middleware to rewrite URLs before they reach the API
+    // Add middleware logging
     app.use((req, res, next) => {
-        if (req.url.includes('/v1/')) {
-            console.log('Before URL rewrite:', req.url);
-            req.headers.host = 'ec2-3-89-232-12.compute-1.amazonaws.com:8000';
-            req.url = req.url.replace('localhost:8000', 'ec2-3-89-232-12.compute-1.amazonaws.com:8000');
-            console.log('After URL rewrite:', req.url);
-        }
+        console.log('Incoming request:', {
+            url: req.url,
+            method: req.method,
+            headers: req.headers
+        });
         next();
     });
 
@@ -145,16 +145,10 @@ if(isRouteEnabled("index", "docs")) {
             displayRequestDuration: true,
             tryItOutEnabled: true,
             defaultModelsExpandDepth: -1,
-            filter: true,
-            requestInterceptor: (req) => {
-                const url = new URL(req.url);
-                if (url.hostname === 'localhost') {
-                    req.url = req.url.replace('localhost:8000', 'ec2-3-89-232-12.compute-1.amazonaws.com:8000');
-                }
-                return req;
-            }
+            filter: true
         }
     }));
+    console.log('Swagger UI setup complete');
 }
 
 const PORT = process.env.PORT || 8000
