@@ -68,6 +68,15 @@ if(isRouteEnabled("index", "stats")) {
     }))
 }
 
+// Add test route here
+app.get('/test-docs', (req, res) => {
+    console.log('Test docs route hit');
+    res.json({
+        isDocsEnabled: isRouteEnabled("index", "docs"),
+        enabledApis: process.env.ENABLED_APIS
+    });
+});
+
 buildRoutes(app);
 
 /*if(isRouteEnabled("index", "docs")) {
