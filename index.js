@@ -79,50 +79,25 @@ app.get('/test-docs', (req, res) => {
 
 buildRoutes(app);
 
-/*if(isRouteEnabled("index", "docs")) {
-    console.log('Original Swagger Spec:', JSON.stringify(swaggerSpec, null, 2));
+const router = express.Router();
 
-    const options = {
-        customSiteTitle: "Voyager APIs",
-        swaggerOptions: {
-            url: undefined,
-            persistAuthorization: true,
-            displayRequestDuration: true,
-            tryItOutEnabled: true,
-            defaultModelsExpandDepth: -1,
-            filter: true,
-            defaultServerUrl: 'http://ec2-3-89-232-12.compute-1.amazonaws.com:8000'
-        }
+// Test endpoint
+router.get('/api/test-config', (req, res) => {
+    console.log('Test config route hit');
+    const config = {
+        isDocsEnabled: isRouteEnabled("index", "docs"),
+        enabledApis: process.env.ENABLED_APIS,
+        currentUrl: req.protocol + '://' + req.get('host') + req.originalUrl,
+        swaggerUrl: process.env.SWAGGER_URL || 'http://ec2-3-89-232-12.compute-1.amazonaws.com:8000'
     };
+    console.log('Config:', config);
+    res.json(config);
+});
 
-    // Add a route to explicitly serve the swagger spec
-    app.get('/swagger.json', (req, res) => {
-        // Force the server URL in the spec
-        const modifiedSpec = {
-            ...swaggerSpec,
-            servers: [{
-                url: 'http://ec2-3-89-232-12.compute-1.amazonaws.com:8000',
-                description: 'EC2 server'
-            }],
-	    host: 'ec2-3-89-232-12.compute-1.amazonaws.com:8000',
-            schemes: ['http']
-        };
-	console.log('Modified Swagger Spec:', JSON.stringify(modifiedSpec, null, 2));
-        res.json(modifiedSpec);
-    });
-    app.use('/', swaggerUi.serve, swaggerUi.setup(null, {
-        customSiteTitle: "Voyager APIs",
-        swaggerOptions: {
-            url: '/swagger.json',
-            persistAuthorization: true,
-            displayRequestDuration: true,
-            tryItOutEnabled: true,
-            defaultModelsExpandDepth: -1,
-            filter: true
-        }
-    }));
-}*/
+// Mount the router
+app.use('/', router);
 
+// Swagger setup
 if(isRouteEnabled("index", "docs")) {
     console.log('Documentation route is enabled');
     console.log('Initializing Swagger documentation...');
@@ -140,19 +115,6 @@ if(isRouteEnabled("index", "docs")) {
         res.json(modifiedSpec);
     });
 
-    // Add test config route
-    app.get('/api/test-config', (req, res) => {
-        console.log('Test config route hit');
-        const config = {
-            isDocsEnabled: isRouteEnabled("index", "docs"),
-            enabledApis: process.env.ENABLED_APIS,
-            currentUrl: req.protocol + '://' + req.get('host') + req.originalUrl,
-            swaggerUrl: process.env.SWAGGER_URL || 'http://ec2-3-89-232-12.compute-1.amazonaws.com:8000'
-        };
-        console.log('Config:', config);
-        res.json(config);
-    });
-
     // Add middleware logging
     app.use((req, res, next) => {
         console.log('Incoming request:', {
@@ -163,7 +125,7 @@ if(isRouteEnabled("index", "docs")) {
         next();
     });
 
-    app.use('/', swaggerUi.serve, swaggerUi.setup(null, {
+    app.use('/docs', swaggerUi.serve, swaggerUi.setup(null, {
         customSiteTitle: "Voyager APIs",
         swaggerOptions: {
             url: '/swagger.json',
