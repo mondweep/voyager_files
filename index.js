@@ -140,6 +140,19 @@ if(isRouteEnabled("index", "docs")) {
         res.json(modifiedSpec);
     });
 
+    // Add test config route
+    app.get('/api/test-config', (req, res) => {
+        console.log('Test config route hit');
+        const config = {
+            isDocsEnabled: isRouteEnabled("index", "docs"),
+            enabledApis: process.env.ENABLED_APIS,
+            currentUrl: req.protocol + '://' + req.get('host') + req.originalUrl,
+            swaggerUrl: process.env.SWAGGER_URL || 'http://ec2-3-89-232-12.compute-1.amazonaws.com:8000'
+        };
+        console.log('Config:', config);
+        res.json(config);
+    });
+
     // Add middleware logging
     app.use((req, res, next) => {
         console.log('Incoming request:', {
