@@ -122,6 +122,11 @@
       }
     },
     "/v1/chat/completions": {
+      "servers": [
+        {
+          "url": "http://ec2-3-89-232-12.compute-1.amazonaws.com:8000"
+        }
+      ],
       "post": {
         "tags": [
           "Chat"
