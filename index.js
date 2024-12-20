@@ -138,6 +138,17 @@ if(isRouteEnabled("index", "docs")) {
     }));
 }
 
+console.log('Checking embedding route:', {
+    isEnabled: isRouteEnabled("embedding"),
+    apis: process.env.ENABLED_APIS
+});
+
+//Commenting out as this is redundant. It is already set up in routes/index.js
+/*if (isRouteEnabled("embedding")) {
+    console.log('Setting up embedding route');
+    api_router.use('/embeddings', embeddingRoute());
+}*/
+
 const PORT = process.env.PORT || 8000
 console.log('About to start server on port:', PORT);
 if(
