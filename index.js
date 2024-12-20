@@ -100,7 +100,17 @@ app.use('/', router);
 // Swagger setup
 if(isRouteEnabled("index", "docs")) {
     console.log('Documentation route is enabled');
-    console.log('Current swagger spec:', JSON.stringify(swaggerSpec.servers, null, 2));
+    console.log('Initializing Swagger documentation...');
+    
+    // Add debug logging middleware before swagger routes
+    app.use((req, res, next) => {
+        console.log('Incoming request:', {
+            path: req.path,
+            method: req.method,
+            headers: req.headers
+        });
+        next();
+    });
     
     app.get('/swagger.json', (req, res) => {
         console.log('Swagger spec requested from:', req.get('host'));
@@ -111,15 +121,17 @@ if(isRouteEnabled("index", "docs")) {
                 description: 'EC2 server'
             }]
         };
-        console.log('Sending modified swagger spec servers:', JSON.stringify(modifiedSpec.servers, null, 2));
+        console.log('Modified swagger spec:', {
+            servers: modifiedSpec.servers,
+            paths: Object.keys(modifiedSpec.paths || {})
+        });
         res.json(modifiedSpec);
     });
 
-    // Then setup Swagger UI
-    app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {  // Pass swaggerSpec directly
+    app.use('/docs', swaggerUi.serve, swaggerUi.setup(null, {
         customSiteTitle: "Voyager APIs",
         swaggerOptions: {
-            url: `http://ec2-3-89-232-12.compute-1.amazonaws.com:8000/swagger.json`, // Use full URL
+            url: '/swagger.json',
             persistAuthorization: true,
             displayRequestDuration: true,
             tryItOutEnabled: true,
@@ -127,6 +139,7 @@ if(isRouteEnabled("index", "docs")) {
             filter: true
         }
     }));
+    console.log('Swagger UI setup complete');
 }
 
 const PORT = process.env.PORT || 8000
