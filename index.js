@@ -32,6 +32,11 @@ import { readFileSync } from 'fs';
 
 console.log('Starting Voyager server...');
 
+// Add heartbeat check
+setInterval(() => {
+    console.log('Heartbeat check:', new Date().toISOString());
+}, 5000);
+
 configDotenv()
 configDotenv({path: ".env.production", override:true})
 decodeEnabledAPIs();
