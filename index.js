@@ -100,10 +100,10 @@ app.use('/', router);
 // Swagger setup
 if(isRouteEnabled("index", "docs")) {
     console.log('Documentation route is enabled');
+    console.log('Current swagger spec:', JSON.stringify(swaggerSpec.servers, null, 2));
     
-    // Serve the swagger spec first
     app.get('/swagger.json', (req, res) => {
-        console.log('Swagger spec requested');
+        console.log('Swagger spec requested from:', req.get('host'));
         const modifiedSpec = {
             ...swaggerSpec,
             servers: [{
@@ -111,7 +111,7 @@ if(isRouteEnabled("index", "docs")) {
                 description: 'EC2 server'
             }]
         };
-        res.setHeader('Cache-Control', 'no-cache');
+        console.log('Sending modified swagger spec servers:', JSON.stringify(modifiedSpec.servers, null, 2));
         res.json(modifiedSpec);
     });
 
