@@ -25,11 +25,22 @@ import { getAllFilesData, loadFileToDatabase } from "../database/file-handling.j
  */
 
 export async function uploadFile(req, res) {
+    console.log('API Key:', extractAPIKeyFromRequest(req));
+    
     if (!validateAPIKey(extractAPIKeyFromRequest(req))) {
+        console.log('API Key validation failed');
         res.status(401).send("Not Authorized!");
         return;
     }
+
     const { file } = req;
+    console.log('Received file:', {
+        exists: !!file,
+        mimetype: file?.mimetype,
+        size: file?.size,
+        originalname: file?.originalname
+    });
+
     if (!file) {
         res.status(400).send("Input file not specified");
         return;
