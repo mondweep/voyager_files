@@ -39,6 +39,7 @@ services:
       context: .
     volumes:
       - ${DATABASE_BIND_PATH}:/tmp/lancedb
+      - ./files:/app/files
     expose:
       - ${APP_PORT}
     ports:
