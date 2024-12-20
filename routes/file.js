@@ -6,7 +6,14 @@ export default function fileRoute() {
     const router = Router();
     const upload = multer();
 
-    router.post('', upload.single('input'), uploadFile);
+    router.post('', upload.single('input'), (req, res, next) => {
+        console.log('File upload request received:', {
+            file: req.file,
+            body: req.body,
+            contentType: req.headers['content-type']
+        });
+        return uploadFile(req, res, next);
+    });
     router.get('', getAllFiles);
 
     return router;
