@@ -105,31 +105,23 @@ app.use('/', router);
 // Swagger setup
 if(isRouteEnabled("index", "docs")) {
     console.log('Documentation route is enabled');
-    console.log('Initializing Swagger documentation...');
     
-    // Add debug logging middleware before swagger routes
-    app.use((req, res, next) => {
-        console.log('Incoming request:', {
-            path: req.path,
-            method: req.method,
-            headers: req.headers
-        });
-        next();
+    // Add root route to redirect to docs
+    app.get('/', (req, res) => {
+        console.log('Root route accessed, redirecting to /docs');
+        res.redirect('/docs');
     });
-    
+
     app.get('/swagger.json', (req, res) => {
         console.log('Swagger spec requested from:', req.get('host'));
         const modifiedSpec = {
             ...swaggerSpec,
             servers: [{
-                url: 'http://ec2-3-89-232-12.compute-1.amazonaws.com:8000',
-                description: 'EC2 server'
+                url: `http://${req.get('host')}`,  // Use the actual host
+                description: 'API Server'
             }]
         };
-        console.log('Modified swagger spec:', {
-            servers: modifiedSpec.servers,
-            paths: Object.keys(modifiedSpec.paths || {})
-        });
+        console.log('Sending modified swagger spec with servers:', JSON.stringify(modifiedSpec.servers, null, 2));
         res.json(modifiedSpec);
     });
 
@@ -144,7 +136,6 @@ if(isRouteEnabled("index", "docs")) {
             filter: true
         }
     }));
-    console.log('Swagger UI setup complete');
 }
 
 const PORT = process.env.PORT || 8000
