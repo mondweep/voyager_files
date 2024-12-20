@@ -1,5 +1,6 @@
 // coding=utf-8
 
+import { mkdir } from 'fs/promises';
 import { randomUUID } from "crypto";
 import { extractAPIKeyFromRequest, validateAPIKey } from "../tools/apiKey.js";
 import * as fs from 'fs';
@@ -73,14 +74,19 @@ export async function uploadFile(req, res) {
         return;
     }
 
-    // load file
-    const uploadPath = `files/${file.originalname}`;
-    fs.writeFileSync(uploadPath, file.buffer, (err) => {
-        if (err) throw err;
-        console.log("File has been saved");
-    })
-
-    res.status(200).send(resBody);
+    try {
+        // Create files directory if it doesn't exist
+        await mkdir('files', { recursive: true });
+        
+        // load file
+        const uploadPath = `files/${file.originalname}`;
+        fs.writeFileSync(uploadPath, file.buffer);
+        
+        res.status(200).send(resBody);
+    } catch (error) {
+        console.error('Error saving file:', error);
+        res.status(500).send("Error saving file");
+    }
     return;
 }
 
