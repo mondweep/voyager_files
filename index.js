@@ -117,8 +117,8 @@ if(isRouteEnabled("index", "docs")) {
         const modifiedSpec = {
             ...swaggerSpec,
             servers: [{
-                url: `http://${req.get('host')}`,  // Use the actual host
-                description: 'API Server'
+                url: process.env.SWAGGER_URL || 'http://ec2-174-129-177-105.compute-1.amazonaws.com:8000',
+                description: 'EC2 Server'
             }]
         };
         console.log('Sending modified swagger spec with servers:', JSON.stringify(modifiedSpec.servers, null, 2));
