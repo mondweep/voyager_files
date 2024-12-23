@@ -16,9 +16,11 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY requirements.txt* ./
 RUN if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi
 
-COPY . .
+RUN mkdir -p /app/scripts
+COPY ../genai_cybersecurity/src/challenge_2/analysis.py /app/scripts/
+RUN chmod +x /app/scripts/analysis.py
 
-RUN chmod +x /app/GenAI_CyberSecurity/src/challenge_2/analysis.py
+COPY . .
 
 EXPOSE 8000
 
