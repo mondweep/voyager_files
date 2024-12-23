@@ -113,15 +113,19 @@ if(isRouteEnabled("index", "docs")) {
     });
 
     app.get('/swagger.json', (req, res) => {
-        console.log('Swagger spec requested from:', req.get('host'));
+        // Set the correct content type
+        res.setHeader('Content-Type', 'application/json');
+        
+        const EC2_URL = 'http://ec2-174-129-177-105.compute-1.amazonaws.com:8000';
         const modifiedSpec = {
             ...swaggerSpec,
             servers: [{
-                url: process.env.SWAGGER_URL || 'http://ec2-174-129-177-105.compute-1.amazonaws.com:8000',
+                url: EC2_URL,
                 description: 'EC2 Server'
             }]
         };
-        console.log('Sending modified swagger spec with servers:', JSON.stringify(modifiedSpec.servers, null, 2));
+        
+        // Send the JSON response
         res.json(modifiedSpec);
     });
 
