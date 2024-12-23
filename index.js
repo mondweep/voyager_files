@@ -125,15 +125,21 @@ if(isRouteEnabled("index", "docs")) {
         res.json(modifiedSpec);
     });
 
+    const modifiedSwaggerSpec = {
+        ...swaggerSpec,
+        servers: [{
+            url: 'http://ec2-174-129-177-105.compute-1.amazonaws.com:8000',
+            description: 'EC2 Server'
+        }]
+    };
+
     app.use('/docs', swaggerUi.serve);
-    app.get('/docs', swaggerUi.setup(swaggerSpec, {
+    app.get('/docs', swaggerUi.setup(modifiedSwaggerSpec, {
+        explorer: true,
         swaggerOptions: {
-            url: '/swagger.json',
-            persistAuthorization: true,
             displayRequestDuration: true,
-            tryItOutEnabled: true,
-            defaultModelsExpandDepth: -1,
-            filter: true
+            docExpansion: 'none',
+            filter: true,
         }
     }));
 }
