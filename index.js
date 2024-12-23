@@ -24,7 +24,7 @@ import buildRoutes from './routes/index.js'
 
 import swStats from 'swagger-stats';
 import * as swaggerUi from 'swagger-ui-express'
-import swaggerSpec from "./swagger.json" with { type: "json" };
+import swaggerJson from './swagger.json' assert { type: 'json' };
 import { decodeEnabledAPIs, isRouteEnabled } from './tools/enabledApiDecoder.js';
 import { loadDefaultDataset } from './tools/plugin.js';
 import { loadDataset } from './database/rag-inference.js';
@@ -69,7 +69,7 @@ if(isRouteEnabled("index", "stats")) {
     app.use(swStats.getMiddleware({
         name: "Voyager Swagger Monitor",
         uriPath: '/stats',
-        swaggerSpec
+        swaggerJson
     }))
 }
 
@@ -116,7 +116,7 @@ if(isRouteEnabled("index", "docs")) {
         res.setHeader('Content-Type', 'application/json');
         
         const modifiedSpec = {
-            ...swaggerSpec,
+            ...swaggerJson,
             servers: [{
                 url: 'http://ec2-174-129-177-105.compute-1.amazonaws.com:8000',
                 description: 'EC2 Server'
@@ -125,11 +125,13 @@ if(isRouteEnabled("index", "docs")) {
         res.json(modifiedSpec);
     });
 
-    const swaggerDocument = require('./swagger.json');
-    swaggerDocument.servers = [{
-        url: 'http://ec2-174-129-177-105.compute-1.amazonaws.com:8000',
-        description: 'EC2 Server'
-    }];
+    const swaggerDocument = {
+        ...swaggerJson,
+        servers: [{
+            url: 'http://ec2-174-129-177-105.compute-1.amazonaws.com:8000',
+            description: 'EC2 Server'
+        }]
+    };
 
     app.use('/docs', swaggerUi.serve);
     app.get('/docs', swaggerUi.setup(swaggerDocument));
