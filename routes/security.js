@@ -29,6 +29,8 @@ router.use(securityMiddleware);
 router.post('/encrypt', async (req, res) => {
     const { data, password } = req.body;
     
+    console.log('Encryption request received:', { data: data, passwordLength: password?.length });
+    
     const pythonProcess = spawn('python3', [
         PYTHON_SCRIPT,
         '--mode', 'encrypt',
@@ -37,24 +39,38 @@ router.post('/encrypt', async (req, res) => {
     ]);
 
     let result = '';
+    let errorOutput = '';
     
     pythonProcess.stdout.on('data', (data) => {
+        console.log('Python stdout:', data.toString());
         result += data.toString();
     });
 
     pythonProcess.stderr.on('data', (data) => {
-        console.error(`Error: ${data}`);
+        console.log('Python stderr:', data.toString());
+        errorOutput += data.toString();
     });
 
     pythonProcess.on('close', (code) => {
+        console.log('Python process exited with code:', code);
+        console.log('Full result:', result);
+        console.log('Full error:', errorOutput);
+        
         if (code !== 0) {
-            return res.status(500).json({ error: 'Encryption failed' });
+            return res.status(500).json({ 
+                error: 'Encryption failed',
+                details: errorOutput
+            });
         }
         try {
             const parsedResult = JSON.parse(result);
             res.json(parsedResult);
         } catch (error) {
-            res.status(500).json({ error: 'Failed to parse encryption result' });
+            res.status(500).json({ 
+                error: 'Failed to parse encryption result',
+                rawOutput: result,
+                parseError: error.message
+            });
         }
     });
 });
@@ -70,24 +86,38 @@ router.post('/chat/encrypt', async (req, res) => {
     ]);
 
     let result = '';
+    let errorOutput = '';
     
     pythonProcess.stdout.on('data', (data) => {
+        console.log('Python stdout:', data.toString());
         result += data.toString();
     });
 
     pythonProcess.stderr.on('data', (data) => {
-        console.error(`Error: ${data}`);
+        console.log('Python stderr:', data.toString());
+        errorOutput += data.toString();
     });
 
     pythonProcess.on('close', (code) => {
+        console.log('Python process exited with code:', code);
+        console.log('Full result:', result);
+        console.log('Full error:', errorOutput);
+        
         if (code !== 0) {
-            return res.status(500).json({ error: 'Chat encryption failed' });
+            return res.status(500).json({ 
+                error: 'Chat encryption failed',
+                details: errorOutput
+            });
         }
         try {
             const parsedResult = JSON.parse(result);
             res.json(parsedResult);
         } catch (error) {
-            res.status(500).json({ error: 'Failed to parse encryption result' });
+            res.status(500).json({ 
+                error: 'Failed to parse encryption result',
+                rawOutput: result,
+                parseError: error.message
+            });
         }
     });
 });
