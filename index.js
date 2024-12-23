@@ -113,24 +113,20 @@ if(isRouteEnabled("index", "docs")) {
     });
 
     app.get('/swagger.json', (req, res) => {
-        // Set the correct content type
         res.setHeader('Content-Type', 'application/json');
         
-        const EC2_URL = 'http://ec2-174-129-177-105.compute-1.amazonaws.com:8000';
         const modifiedSpec = {
             ...swaggerSpec,
             servers: [{
-                url: EC2_URL,
+                url: 'http://ec2-174-129-177-105.compute-1.amazonaws.com:8000',
                 description: 'EC2 Server'
             }]
         };
-        
-        // Send the JSON response
         res.json(modifiedSpec);
     });
 
-    app.use('/docs', swaggerUi.serve, swaggerUi.setup(null, {
-        customSiteTitle: "Voyager APIs",
+    app.use('/docs', swaggerUi.serve);
+    app.get('/docs', swaggerUi.setup(swaggerSpec, {
         swaggerOptions: {
             url: '/swagger.json',
             persistAuthorization: true,
