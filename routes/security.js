@@ -42,6 +42,7 @@ router.post('/encrypt', async (req, res) => {
     let errorOutput = '';
     
     pythonProcess.stdout.on('data', (data) => {
+        console.log('Python stdout (raw):', data);
         console.log('Python stdout:', data.toString());
         result += data.toString();
     });
@@ -53,7 +54,7 @@ router.post('/encrypt', async (req, res) => {
 
     pythonProcess.on('close', (code) => {
         console.log('Python process exited with code:', code);
-        console.log('Full result:', result);
+        console.log('Full result (pre-parse):', result);
         console.log('Full error:', errorOutput);
         
         if (code !== 0) {
@@ -63,9 +64,12 @@ router.post('/encrypt', async (req, res) => {
             });
         }
         try {
+            console.log('Attempting to parse:', result);
             const parsedResult = JSON.parse(result);
+            console.log('Successfully parsed:', parsedResult);
             res.json(parsedResult);
         } catch (error) {
+            console.log('Parse error details:', error);
             res.status(500).json({ 
                 error: 'Failed to parse encryption result',
                 rawOutput: result,
