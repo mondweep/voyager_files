@@ -22,6 +22,7 @@ RUN chmod +x /app/scripts/analysis.py
 COPY . .
 
 # Create input directory and copy data
+RUN mkdir -p /input/cyber-security-incidents
 COPY input/cyber-security-incidents/incidents.csv /input/cyber-security-incidents/
 
 EXPOSE 8000
