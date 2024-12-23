@@ -8,10 +8,10 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 COPY package*.json ./
 
-RUN npm install -g pnpm && pnpm install
+RUN npm install
 
-COPY requirements.txt ./
-RUN pip3 install -r requirements.txt
+COPY requirements.txt* ./
+RUN if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi
 
 COPY . .
 
