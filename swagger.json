@@ -14,7 +14,7 @@
   "servers": [
     {
       "url": "http://ec2-174-129-177-105.compute-1.amazonaws.com:8000",
-      "description": "EC2 server"
+      "description": "EC2 Server"
     }
   ],
   "tags": [

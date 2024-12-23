@@ -125,23 +125,14 @@ if(isRouteEnabled("index", "docs")) {
         res.json(modifiedSpec);
     });
 
-    const modifiedSwaggerSpec = {
-        ...swaggerSpec,
-        servers: [{
-            url: 'http://ec2-174-129-177-105.compute-1.amazonaws.com:8000',
-            description: 'EC2 Server'
-        }]
-    };
+    const swaggerDocument = require('./swagger.json');
+    swaggerDocument.servers = [{
+        url: 'http://ec2-174-129-177-105.compute-1.amazonaws.com:8000',
+        description: 'EC2 Server'
+    }];
 
     app.use('/docs', swaggerUi.serve);
-    app.get('/docs', swaggerUi.setup(modifiedSwaggerSpec, {
-        explorer: true,
-        swaggerOptions: {
-            displayRequestDuration: true,
-            docExpansion: 'none',
-            filter: true,
-        }
-    }));
+    app.get('/docs', swaggerUi.setup(swaggerDocument));
 }
 
 console.log('Checking embedding route:', {
