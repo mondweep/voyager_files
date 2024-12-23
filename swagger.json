@@ -41,6 +41,10 @@
     {
       "name": "File",
       "description": "v1 File APIs"
+    },
+    {
+      "name": "Security",
+      "description": "Security and encryption endpoints"
     }
   ],
   "paths": {
@@ -645,6 +649,84 @@
             "api_key": []
           }
         ]
+      }
+    },
+    "/security/encrypt": {
+      "post": {
+        "tags": ["Security"],
+        "summary": "Encrypt data",
+        "description": "Encrypt sensitive data with a password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "string",
+                    "example": "This is sensitive data"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "test123"
+                  }
+                },
+                "required": ["data", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data encrypted successfully"
+          }
+        }
+      }
+    },
+    "/security/chat/encrypt": {
+      "post": {
+        "tags": ["Security"],
+        "summary": "Encrypt chat messages",
+        "description": "Encrypt sensitive messages in a chat conversation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "content": {
+                          "type": "string",
+                          "example": "This is a sensitive message"
+                        },
+                        "sensitive": {
+                          "type": "boolean",
+                          "example": true
+                        }
+                      }
+                    }
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "test123"
+                  }
+                },
+                "required": ["messages", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Messages encrypted successfully"
+          }
+        }
       }
     }
   },
