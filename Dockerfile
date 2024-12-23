@@ -21,6 +21,9 @@ RUN chmod +x /app/scripts/analysis.py
 
 COPY . .
 
+# Create input directory and copy data
+COPY input/cyber-security-incidents/incidents.csv /input/cyber-security-incidents/
+
 EXPOSE 8000
 
 HEALTHCHECK --interval=300s --timeout=30s --start-period=5s --retries=3 CMD [ "node", "healthy-check.js" ]
