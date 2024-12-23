@@ -3,10 +3,18 @@ import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import securityMiddleware from '../middleware/securityMiddleware.js';
+import cors from 'cors';
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Enable CORS for all security routes
+router.use(cors({
+    origin: '*',  // Be more restrictive in production
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'accept', 'Authorization']
+}));
 
 // Add debug logging
 console.log('Current directory:', __dirname);
