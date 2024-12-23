@@ -93,7 +93,7 @@ router.get('/api/test-config', (req, res) => {
         isDocsEnabled: isRouteEnabled("index", "docs"),
         enabledApis: process.env.ENABLED_APIS,
         currentUrl: req.protocol + '://' + req.get('host') + req.originalUrl,
-        swaggerUrl: process.env.SWAGGER_URL || 'http://ec2-3-89-232-12.compute-1.amazonaws.com:8000'
+        swaggerUrl: process.env.SWAGGER_URL || 'http://ec2-174-129-177-105.compute-1.amazonaws.com:8000'
     };
     console.log('Config:', config);
     res.json(config);
@@ -170,4 +170,25 @@ if(
     app.listen(PORT, '0.0.0.0', () => {
         console.log(`VOYAGER is running on port ${PORT}, happy sailing!`)
     })
+}
+
+function generateAPIRouters() {
+    const api_router = Router();
+    
+    // Add debug logging
+    console.log('Checking embedding route status:', {
+        isEnabled: isRouteEnabled("embedding"),
+        routeExists: typeof embeddingRoute === 'function'
+    });
+
+    isRouteEnabled("embedding") && api_router.use('/embeddings', embeddingRoute());
+    isRouteEnabled("inference") && api_router.use('/chat', inferenceRoute());
+    isRouteEnabled("token") && api_router.use('/token', tokenRoute());
+    // api_router.use('/tracing', tracingRoute());
+    // api_router.use('/encoder', encoderRoute());
+    // api_router.use('/decoder', decoderRoute());
+    isRouteEnabled("version") && api_router.use('/version', versionRoute());
+    isRouteEnabled("file") && api_router.use('/files', fileRoute());
+
+    return api_router;
 }
