@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import { Router } from "express";
+import express from 'express';
 
 import inferenceRoute from "./inference.js";
 import tokenRoute from "./token.js";
@@ -25,6 +26,7 @@ import versionRoute from "./version.js";
 import { isRouteEnabled } from "../tools/enabledApiDecoder.js";
 import { generateScript } from "../tools/web_embed.js";
 import fileRoute from "./file.js";
+import securityRoute from './security.js';
 
 function indexRoute() {
     const router = Router();
@@ -64,4 +66,5 @@ function generateAPIRouters() {
 export default function buildRoutes(app) {
     app.use('/', indexRoute());
     app.use('/v1', generateAPIRouters());
+    app.use('/security', securityRoute);
 }
