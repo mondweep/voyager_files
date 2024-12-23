@@ -2,13 +2,21 @@ import express from 'express';
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import securityMiddleware from '../middleware/securityMiddleware.js';
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Path to your Python script - adjust the path to point to your analysis.py
+// Add debug logging
+console.log('Current directory:', __dirname);
+
+// Path to your Python script
 const PYTHON_SCRIPT = path.join(__dirname, '..', '..', 'GenAI_CyberSecurity', 'src', 'challenge_2', 'analysis.py');
+console.log('Python script path:', PYTHON_SCRIPT);
+
+// Apply the middleware to all routes in this router
+router.use(securityMiddleware);
 
 router.post('/encrypt', async (req, res) => {
     const { data, password } = req.body;
