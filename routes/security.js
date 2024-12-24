@@ -20,7 +20,7 @@ router.use(cors({
 console.log('Current directory:', __dirname);
 
 // Path to your Python script
-const PYTHON_SCRIPT = path.join(__dirname, '..', 'scripts', 'analysis.py');
+const PYTHON_SCRIPT = path.join(__dirname, '..', 'scripts', 'test_api_security.py');
 console.log('Python script path:', PYTHON_SCRIPT);
 
 // Apply the middleware to all routes in this router
